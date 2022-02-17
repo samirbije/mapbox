@@ -46,22 +46,13 @@ class map extends React.Component<{}, State> {
       },
       popupInfo: undefined,
     };
-    // window.test = () => {
-    //   this.setState({
-    //     ...this.state,
-    //     viewport: {
-    //       ...this.state.viewport,
-    //       zoom: this.state.viewport.zoom === 5 ? 1 : 5,
-    //     },
-    //   });
-    // };
   }
 
-  _updateViewport = (viewport: Viewport) => {
+  updateViewport = (viewport: Viewport) => {
     this.setState({ viewport });
   };
   // the method to render the markers
-  _renderCityMarker = (city: any): JSX.Element => {
+  renderCityMarker = (city: any): JSX.Element => {
     return (
       <Marker
         longitude={Number(city.longitude)}
@@ -74,8 +65,9 @@ class map extends React.Component<{}, State> {
       </Marker>
     );
   };
+
   // method to render the Popup
-  _renderPopup = () => {
+  renderPopup = () => {
     const { popupInfo } = this.state;
     return (
       popupInfo && (
@@ -101,29 +93,14 @@ class map extends React.Component<{}, State> {
       latitude: value.split(",")[0],
       longitude: value.split(",")[1],
     };
-    this._renderCityMarker(cityInfo);
-    this.setState({ popupInfo: cityInfo }, () => this._renderPopup);
+    this.renderCityMarker(cityInfo);
+    this.setState({ popupInfo: cityInfo }, () => this.renderPopup);
   };
 
   render() {
     var { viewport } = this.state;
 
-    const fullscreenControlStyle = {
-      position: "absolute",
-      top: 0,
-      left: 0,
-      padding: "10px",
-    };
-
-    const navStyle = {
-      position: "absolute",
-      top: 36,
-      left: 0,
-      padding: "10px",
-    };
-
     return (
-      ///////////////////////////////////////////////////////////
       <>
         <div>
           <h1>Which location are you interested in?</h1>
@@ -149,13 +126,13 @@ class map extends React.Component<{}, State> {
                     width="400px"
                     height="400px"
                     mapStyle="mapbox://styles/mapbox/light-v10"
-                    onViewportChange={this._updateViewport}
+                    onViewportChange={this.updateViewport}
                     mapboxApiAccessToken={
                       "pk.eyJ1Ijoia3NhbmthbHBhIiwiYSI6ImNrZ2tuYXVxMjBqNGgycnFwajMyY2Rpb3UifQ.4XEbhyaiL5uCvKFpgMISXA"
                     }
                   >
-                    {Data.map(this._renderCityMarker)}
-                    {this._renderPopup()}
+                    {Data.map(this.renderCityMarker)}
+                    {this.renderPopup()}
                     <div
                       className="fullscreen"
                       style={{
