@@ -9,13 +9,13 @@ import MapGL, {
 import CityPin from "./city-pin";
 import CityInfo from "./city-info";
 import Data from "./cities.json";
-import { Dropdown, Option } from "./Dropdown";
 
 interface State {
   viewport: Viewport;
   popupInfo?: {
     longitude: string;
     latitude: string;
+    city: string;
   };
 }
 
@@ -27,14 +27,18 @@ interface Viewport {
   pitch: number;
 }
 
-interface City {
-  latitude: string; //latitude value of the place you want to focus the map
-  longitude: string; //longitude value of the place you want to focus the map
-  city?: string;
+interface CityInformation {
+  cityInfo: City;
 }
 
-class map extends React.Component<{}, State> {
-  constructor(props: {}) {
+export interface City {
+  latitude: string; //latitude value of the place you want to focus the map
+  longitude: string; //longitude value of the place you want to focus the map
+  city: string;
+}
+
+class Map extends React.Component<CityInformation, State> {
+  constructor(props: CityInformation) {
     super(props);
     this.state = {
       viewport: {
@@ -52,16 +56,19 @@ class map extends React.Component<{}, State> {
     this.setState({ viewport });
   };
   // the method to render the markers
-  renderCityMarker = (city: any): JSX.Element => {
+  renderCityMarker = (): JSX.Element => {
+    const { cityInfo } = this.props;
     return (
       <Marker
-        longitude={Number(city.longitude)}
-        latitude={Number(city.latitude)}
+        longitude={Number(cityInfo ? cityInfo.longitude : 0)}
+        latitude={Number(cityInfo ? cityInfo.latitude : 0)}
       >
-        <CityPin
-          size={20}
-          onMouseEnter={() => this.setState({ popupInfo: city })}
-        />
+        {cityInfo && (
+          <CityPin
+            size={20}
+            onMouseEnter={() => this.setState({ popupInfo: cityInfo })}
+          />
+        )}
       </Marker>
     );
   };
@@ -85,36 +92,10 @@ class map extends React.Component<{}, State> {
     );
   };
 
-  handleSelect = (event: any) => {
-    const { target } = event;
-    const { value, selectedIndex } = target;
-    const cityInfo = {
-      city: target[selectedIndex].text,
-      latitude: value.split(",")[0],
-      longitude: value.split(",")[1],
-    };
-    this.renderCityMarker(cityInfo);
-    this.setState({ popupInfo: cityInfo }, () => this.renderPopup);
-  };
-
   render() {
     var { viewport } = this.state;
-
     return (
       <>
-        <div>
-          <h1>Which location are you interested in?</h1>
-          <Dropdown
-            formLabel="Choose a location"
-            buttonText="Send form"
-            action="/"
-            onChange={this.handleSelect}
-          >
-            <Option value="35.6895, 139.69171">Tokyo </Option>
-            <Option value="35.43333, 139.65">Yokohama </Option>
-            <Option value="35.6, 140.11667">Chiba </Option>
-          </Dropdown>
-        </div>
         <div className="screens">
           <div className="container">
             <div className="row">
@@ -131,8 +112,10 @@ class map extends React.Component<{}, State> {
                       "pk.eyJ1Ijoia3NhbmthbHBhIiwiYSI6ImNrZ2tuYXVxMjBqNGgycnFwajMyY2Rpb3UifQ.4XEbhyaiL5uCvKFpgMISXA"
                     }
                   >
-                    {Data.map(this.renderCityMarker)}
-                    {this.renderPopup()}
+                    {Object.keys(this.props.cityInfo).length > 0 &&
+                      Data.map(this.renderCityMarker)}
+                    {Object.keys(this.props.cityInfo).length > 0 &&
+                      this.renderPopup()}
                     <div
                       className="fullscreen"
                       style={{
@@ -166,4 +149,4 @@ class map extends React.Component<{}, State> {
   }
 }
 
-export default map;
+export default Map;
