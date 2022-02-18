@@ -1,6 +1,5 @@
 import "./App.css";
-import Map from "./map";
-import logo from "./Assets/img/logo.jpeg";
+import Home from "./home";
 
 function App() {
   return (
@@ -8,7 +7,7 @@ function App() {
       <h1>React with Mapbox GL</h1>
       <div className="container">
         <div className="map">
-          <Map />
+          <Home />
         </div>
       </div>
     </div>
